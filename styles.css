@@ -267,6 +267,7 @@ input[type=range]{
   background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.18);
   display:flex;flex-direction:column;padding:20px 22px;
 }
+.panel[hidden]{display:none}
 .panel-head{display:flex;justify-content:space-between;align-items:center}
 .panel-head h3{margin:0}
 .panel-close{border:none;background:none;font-size:1.6rem;cursor:pointer;color:var(--ink-soft);line-height:1}
