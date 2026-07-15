@@ -356,6 +356,78 @@ function renderConvPayoff() {
 /* ============================================================
    ③ INCOME
 ============================================================ */
+const BUCKET_HTML = `
+<p class="layer-head">Layer one · What gets sold</p>
+<p class="layer-note">Money is organized in three buckets by risk, flowing one way, downhill. Life is
+paid from the calmest bucket, and each bucket refills the one below it. Hover anything.</p>
+<div class="bucket-flow">
+  <div class="bucket growth">
+    <h4>Growth Engine <span class="cn">增长</span></h4>
+    <p class="b-role">Decades of compounding, left alone</p>
+    <span class="b-cap">Lives in</span>
+    <div class="chips">
+      <span class="chip acct" data-tip="The most precious space she owns. Gains are never taxed, it is touched last, and it passes to her son with ten more tax free years. The highest expected growth belongs here.">Roth</span>
+      <span class="chip acct" data-tip="Growth held here has its own superpower: at death the gains are wiped out by the step up in basis. So growth in this account is held until death, not sold late in life.">Individual, the step up sleeve</span>
+    </div>
+    <span class="b-cap">Holds</span>
+    <div class="chips">
+      <span class="chip" data-tip="Broad, boring, global stock index funds. The core of the engine.">Stock index funds</span>
+      <span class="chip" data-tip="A small, capped position. Highest expected growth, so if held at all it belongs in the Roth where the upside is never taxed.">Bitcoin</span>
+      <span class="chip" data-tip="A small diversifier. Note gold is taxed as a collectible in the taxable account, worth confirming placement with the advisor.">Gold</span>
+    </div>
+    <p class="b-job">The rule: never sold in a bad year. The two buckets downstream exist precisely so this one is never touched under pressure.</p>
+  </div>
+  <div class="flow-arrow"><span class="fa-line">→</span><span class="fa-cap">refills stable, in good years only</span></div>
+  <div class="bucket stable">
+    <h4>Stable <span class="cn">稳定</span></h4>
+    <p class="b-role">Several years of calm money</p>
+    <span class="b-cap">Lives in</span>
+    <div class="chips">
+      <span class="chip acct" data-tip="The main home of the stable bucket. Treasury ladders and T bills sit here, ready to refill the buffer on a schedule.">Individual</span>
+      <span class="chip acct" data-tip="A temporary home. This account is melting into the Roth through conversions, so what waits inside stays calm, keeping each year's conversion amount predictable against the bracket ceiling.">Traditional, while it lasts</span>
+    </div>
+    <span class="b-cap">Holds</span>
+    <div class="chips">
+      <span class="chip" data-tip="Short government paper. No drama, real yield, matures on a schedule.">T bills</span>
+      <span class="chip" data-tip="A ladder of maturities timed to the years they will be spent, especially 65 to 70.">Treasury ladder</span>
+    </div>
+    <p class="b-job">Sized to carry roughly 65 to 70, the heavy withdrawal years before Social Security. A bond tent: deepest exactly when a bad market would hurt most.</p>
+  </div>
+  <div class="flow-arrow"><span class="fa-line">→</span><span class="fa-cap">refills the buffer on a schedule</span></div>
+  <div class="bucket buffer">
+    <h4>Cash Buffer <span class="cn">现金</span></h4>
+    <p class="b-role">Pays for life</p>
+    <span class="b-cap">Lives in</span>
+    <div class="chips">
+      <span class="chip acct" data-tip="The reservoir. High yield savings holding the bridge money and the protected reserve, sending a monthly amount to checking like a self paid paycheck.">HYSA</span>
+      <span class="chip acct" data-tip="The faucet. Checking for bills and daily life. Holds a month or two of spending, never more.">Bank of America</span>
+    </div>
+    <span class="b-cap">Holds</span>
+    <div class="chips">
+      <span class="chip" data-tip="Plain cash and money market. Its job is availability, not return.">Cash, money market</span>
+    </div>
+    <p class="b-job">Through 64 this bucket carries everything, that is the bridge. From 65 it holds the protected 18 month reserve. It is allowed to be boring.</p>
+  </div>
+</div>
+<div class="bucket-side">
+  <span class="chip acct" data-tip="Triple tax advantaged: deductible in, grows free, tax free out for qualified care. Contributions continue through 64.">HSA</span>
+  <p>A fourth small bucket with one job: healthcare. It sits outside the flow, invested for growth, reserved for medical costs and never used for general spending.</p>
+</div>
+<p class="layer-head">Layer two · Which tax door it exits through</p>
+<p class="layer-note">The buckets decide what gets sold. The order below decides which account the money
+technically leaves from, and the two are independent. She can take a withdrawal from the Roth while
+actually consuming the stable bucket, by swapping holdings between accounts at the same time. Wrappers
+have doors between them. Buckets are what she really owns.</p>`;
+
+function renderBuckets() {
+  const sec = document.getElementById("income");
+  sec.querySelector(".lede").insertAdjacentHTML("afterend", BUCKET_HTML);
+  sec.querySelectorAll(".chip[data-tip]").forEach(c => {
+    c.addEventListener("mousemove", ev => showTip(ev, `<b>${c.textContent}</b>${c.dataset.tip}`));
+    c.addEventListener("mouseleave", hideTip);
+  });
+}
+
 const FUND_META = [
   { k: "ss", name: "Social Security", color: "var(--plum)" },
   { k: "cash", name: "Cash", color: "var(--mist)" },
@@ -599,5 +671,6 @@ window.addEventListener("resize", () => buildTimeline());
 
 /* go */
 buildTimeline();
+renderBuckets();
 buildPanel();
 renderAll();
