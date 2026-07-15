@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回家 · The Road Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <p class="hanzi">回家</p>
+  <h1>The Road Home</h1>
+  <p class="hero-sub">Your retirement, from the working years to age 95, on one page you can touch.</p>
+  <p class="hero-note">Everything below starts from your real numbers, and every number can be changed.
+  This page teaches the plan. It does not replace the November review.</p>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <a href="#timeline">Timeline</a>
+  <a href="#conversions">Conversions</a>
+  <a href="#income">Income</a>
+  <a href="#china">China</a>
+  <a href="#last">Will It Last</a>
+</nav>
+
+<main>
+
+<!-- ① TIMELINE -->
+<section id="timeline">
+  <p class="eyebrow"><span class="cn">时间线</span> The Timeline</p>
+  <h2>Forty years, five chapters</h2>
+  <p class="lede">Almost every decision in the plan is really one question: which chapter am I in,
+  and what is this chapter for? Hover over anything. Click a chapter to read the details.</p>
+
+  <div class="tl-wrap">
+    <div class="tl-band" id="tlBand"></div>
+    <div class="tl-axis" id="tlAxis"></div>
+  </div>
+
+  <div class="tl-detail" id="tlDetail" aria-live="polite"></div>
+</section>
+
+<!-- ② CONVERSIONS -->
+<section id="conversions">
+  <p class="eyebrow"><span class="cn">转换</span> The Conversion Machine</p>
+  <h2>Paying a small tax now to erase a big one later</h2>
+  <p class="lede">A Roth conversion moves money out of the Traditional account, where every future
+  dollar is taxed, and into the Roth, where nothing ever is. The price is ordinary income tax
+  today on the amount moved. The whole game is choosing years when that price is low.</p>
+
+  <div class="card">
+    <div class="conv-head">
+      <div class="seg" role="tablist" aria-label="Conversion year type">
+        <button class="seg-btn active" data-mode="working" role="tab">While working, 56 to 59</button>
+        <button class="seg-btn" data-mode="gap" role="tab">Golden window, 60 to 64</button>
+      </div>
+      <p class="conv-base" id="convBase"></p>
+    </div>
+
+    <label class="slider-label" for="convSlider">Convert this much this year
+      <strong id="convAmtLabel"></strong></label>
+    <input type="range" id="convSlider" min="0" max="450000" step="5000" value="130000">
+
+    <div class="ladder" id="ladder" aria-label="Tax bracket ladder"></div>
+
+    <div class="stat-row">
+      <div class="stat"><span class="stat-num" id="convTax"></span><span class="stat-cap">tax on this conversion</span></div>
+      <div class="stat"><span class="stat-num" id="convRate"></span><span class="stat-cap">average rate paid on it</span></div>
+      <div class="stat"><span class="stat-num" id="convMarg"></span><span class="stat-cap">rate on the last dollar</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card tint">
+      <h3>Why the golden window is golden</h3>
+      <p>Converting <strong>$100,000</strong> costs about <strong id="cmpWork"></strong> while the
+      salary is still there, but only about <strong id="cmpGap"></strong> in a retirement year with
+      no salary. Same money, same destination. The only difference is the year you choose.</p>
+      <p class="fine">While working, a conversion sits on top of the salary and is taxed at the top.
+      In the golden window it starts at the bottom of the brackets, where the first dollars are
+      taxed at 10 and 12 percent, and the standard deduction makes the first slice free.</p>
+    </div>
+    <div class="card tint">
+      <h3>What all this buying gets you</h3>
+      <ul class="clean" id="convPayoff"></ul>
+      <p class="fine">Computed live from your numbers, comparing the plan as set against a version
+      that never converts at all.</p>
+    </div>
+  </div>
+
+  <details class="more">
+    <summary>The rules the plan follows</summary>
+    <ul class="clean">
+      <li>The 24 percent bracket is a ceiling, never a target. Recalculate before every conversion.</li>
+      <li>Conversions happen in stages, in November and December, after a fresh tax projection.</li>
+      <li>Conversion tax is paid from cash, never from the retirement accounts themselves.</li>
+      <li>Conversions stop by 70. By then the Traditional account should be nearly empty.</li>
+      <li>One quiet reason to convert aggressively: a surviving spouse files single, where the same
+      income lands in higher brackets. Money already in the Roth never faces that.</li>
+    </ul>
+  </details>
+</section>
+
+<!-- ③ INCOME -->
+<section id="income">
+  <p class="eyebrow"><span class="cn">取钱</span> Where Money Comes From</p>
+  <h2>Every year, spending has an order</h2>
+  <p class="lede">This is the part most plans skip. It is not just how much you spend, it is which
+  account each dollar comes from. The order below protects the growth accounts and keeps taxes low.</p>
+
+  <ol class="order">
+    <li><strong>Cash above the reserve.</strong> Already taxed, always available. Through 64 the plan spends cash only.</li>
+    <li><strong>Brokerage.</strong> Lightly taxed. Used before touching retirement accounts.</li>
+    <li><strong>Traditional.</strong> Taxed as ordinary income, so it comes late, and conversions should leave little here anyway.</li>
+    <li><strong>Roth.</strong> Used last, and always tax free. In this plan it quietly carries the years just before Social Security, then rests and compounds as the legacy.</li>
+  </ol>
+
+  <div class="card">
+    <label class="slider-label" for="ageSlider">Pick a year of your life
+      <strong id="ageLabel"></strong></label>
+    <input type="range" id="ageSlider" min="60" max="95" step="1" value="62">
+    <div class="fund-bar" id="fundBar"></div>
+    <div class="fund-legend" id="fundLegend"></div>
+    <p class="fund-note" id="fundNote"></p>
+  </div>
+
+  <details class="more">
+    <summary>The cash bridge and the reserve, explained</summary>
+    <p>From 60 to 64 there is no salary and no Social Security, so cash carries everything. The
+    house sale at 60, about $800,000, plus the $200,000 saved during the working years, is that
+    bridge. From 65 on, the plan protects a reserve of 18 months of spending so a bad market never
+    forces a sale. From 70, Social Security covers most of the budget and the portfolio mostly rests.</p>
+  </details>
+</section>
+
+<!-- ④ CHINA -->
+<section id="china">
+  <p class="eyebrow"><span class="cn">中国</span> The China Layer</p>
+  <h2>What actually changes when you go home</h2>
+  <p class="lede">Less than you might fear. As a US citizen your taxes, your accounts, and this
+  whole plan work the same from Shenzhen as from Dallas. Four things need real attention.</p>
+
+  <div class="china-grid">
+    <div class="card">
+      <h3>1 · Healthcare, chapter by chapter</h3>
+      <p><strong>Until 60.</strong> The employer plan, as today.</p>
+      <p><strong>60 to 64, in China.</strong> Chinese healthcare paid directly. Excellent care at a
+      fraction of US prices, which is exactly why the plan holds medical surprises of $10,000 to
+      $45,000 instead of US sized ones. Optional travel cover for US visits.</p>
+      <p><strong>65 and on.</strong> US Medicare begins August 2035, and it pays nothing outside the US.
+      Enroll in Part A, which is free. Part B is a real decision, read below.</p>
+      <details class="more inner"><summary>The Part B decision</summary>
+        <p>Part B costs a premium every month and only helps if you are treated in the US. Skipping
+        it saves money but adds a lifetime late penalty of about 10 percent per year skipped if you
+        ever return and want it. Take it if a move back is realistic, skip it if China is truly
+        permanent. Decide, do not drift.</p></details>
+    </div>
+
+    <div class="card">
+      <h3>2 · Keep the US machinery running</h3>
+      <ul class="clean">
+        <li>A permanent US address, likely your son's, on every account.</li>
+        <li>A US phone number that can receive verification codes.</li>
+        <li>Brokerages can restrict accounts that show a foreign home address. Keep the US address current and do not volunteer the move.</li>
+        <li>Texas as the final state of residence. No state income tax follows you.</li>
+        <li>US tax returns every year, forever, as a citizen. Nothing about the move changes the Roth math.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>3 · Money across the border</h3>
+      <ul class="clean">
+        <li>Social Security is paid to US citizens living in China. Keep the SSA address and bank details current.</li>
+        <li>Move spending money with ordinary bank transfers, in sensible amounts, and keep records.</li>
+        <li>Dad is a Chinese citizen and his costs live inside your budget already. Nothing extra to model, one thing to confirm below.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>4 · Questions for the professionals</h3>
+      <ul class="clean">
+        <li><strong>Advisor:</strong> once China treats you as a tax resident, usually after about six years, how will it tax Roth withdrawals and Social Security? China has no concept of a Roth. This is the single sharpest question in the plan.</li>
+        <li><strong>Attorney:</strong> the unlimited marital deduction does not apply to a spouse who is not a US citizen. Likely harmless at this estate size, but have it confirmed while drafting the Texas will and trust.</li>
+        <li><strong>CPA:</strong> confirm the house basis and the $500,000 exclusion before the sale, and remember it generally requires selling within a few years of moving out.</li>
+        <li><strong>HR:</strong> confirm the SERP payout schedule. It cannot be rolled over or converted, it simply pays out and is taxed when it does.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ⑤ WILL IT LAST -->
+<section id="last">
+  <p class="eyebrow"><span class="cn">安心</span> Will It Last</p>
+  <h2>One picture, in today's dollars</h2>
+  <p class="lede">Every value below is in 2026 purchasing power, so the numbers stay meaningful.
+  Move the controls and watch the shape change. The point is not one exact answer, it is seeing
+  how wide the margin of safety is.</p>
+
+  <div class="card">
+    <div class="scenario-row">
+      <div class="ctrl">
+        <span class="ctrl-cap">Market case</span>
+        <div class="seg small" id="retSeg">
+          <button class="seg-btn" data-ret="3">Stress 3%</button>
+          <button class="seg-btn active" data-ret="5">Base 5%</button>
+          <button class="seg-btn" data-ret="7">Optimistic 7%</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <span class="ctrl-cap">Social Security starts at</span>
+        <div class="seg small" id="ssSeg">
+          <button class="seg-btn" data-ss="62">62</button>
+          <button class="seg-btn" data-ss="67">67</button>
+          <button class="seg-btn active" data-ss="70">70</button>
+        </div>
+      </div>
+      <div class="ctrl grow">
+        <span class="ctrl-cap">Spending <strong id="spendPct">100%</strong> of plan</span>
+        <input type="range" id="spendSlider" min="70" max="130" step="5" value="100">
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <div class="chart-wrap"><svg id="chart" viewBox="0 0 960 400" role="img" aria-label="Portfolio projection by account"></svg></div>
+    <div class="chart-legend" id="chartLegend"></div>
+    <p class="fine">Watch the slate Traditional layer melt into the gold Roth during the conversion
+    years, the cash spike when the house sells at 60, and the whole picture steady when Social
+    Security arrives.</p>
+  </div>
+
+  <details class="more">
+    <summary>Guardrails, for the bad years</summary>
+    <p>If markets fall hard, the plan does not panic and it does not cut essentials. For two years
+    it trims the flexible lines only: travel by 30 percent, hobbies by half, gifts by 10 percent,
+    flexible spending by 40 percent. Essentials are protected first, legacy is optimized last.
+    In her full model this discipline is what pushes success above 94 percent.</p>
+  </details>
+
+  <details class="more">
+    <summary>What this page simplifies</summary>
+    <p>Federal tax only, with the 2026 married brackets held steady in real terms. Social Security
+    modeled as 85 percent taxable. Brokerage gains, IRMAA tiers, and Monte Carlo randomness are left
+    to the full workbook and the professionals. Directions here are right, decimals are theirs.</p>
+  </details>
+</section>
+
+</main>
+
+<footer>
+  <p>Illustrative and educational, in today's dollars, with simplified federal tax.
+  Confirm specifics with the CPA, the advisor, and the attorney before acting.</p>
+  <p class="foot-sign">Built for Mom by her son. <span class="cn">一路平安</span></p>
+</footer>
+
+<button class="numbers-btn" id="numbersBtn" aria-haspopup="dialog">数据 · Her numbers</button>
+
+<div class="panel-scrim" id="panelScrim" hidden></div>
+<aside class="panel" id="panel" role="dialog" aria-label="Her numbers" hidden>
+  <div class="panel-head">
+    <h3>Her numbers</h3>
+    <button class="panel-close" id="panelClose" aria-label="Close">×</button>
+  </div>
+  <p class="fine">Change anything. The whole page recalculates and your edits are saved on this
+  device. Reset returns to the plan of record.</p>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="panel-foot">
+    <button class="btn ghost" id="resetBtn">Reset to plan</button>
+    <button class="btn" id="doneBtn">Done</button>
+  </div>
+</aside>
+
+<div class="tooltip" id="tooltip" hidden></div>
+
+<script src="script.js"></script>
+</body>
+</html>
