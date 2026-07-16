@@ -16,15 +16,15 @@
   <h1>The Road Home</h1>
   <p class="hero-sub">Your retirement, from the working years to age 95, on one page you can touch.</p>
   <p class="hero-note">Everything below starts from your real numbers, and every number can be changed.
-  This page teaches the plan. It does not replace the November review.</p>
+  This page teaches the plan. It does not account for everything. </p>
 </header>
 
 <nav class="toc" aria-label="Sections">
   <a href="#timeline">Timeline</a>
   <a href="#conversions">Conversions</a>
   <a href="#income">Income</a>
-  <a href="#china">China</a>
   <a href="#last">Will It Last</a>
+  <a href="#china">China</a>
 </nav>
 
 <main>
@@ -34,7 +34,7 @@
   <p class="eyebrow"><span class="cn">时间线</span> The Timeline</p>
   <h2>Forty years, five chapters</h2>
   <p class="lede">Almost every decision in the plan is really one question: which chapter am I in,
-  and what is this chapter for? Hover over anything. Click a chapter to read the details.</p>
+  and what is this chapter for?</p>
 
   <div class="tl-wrap">
     <div class="tl-band" id="tlBand"></div>
@@ -131,13 +131,77 @@
   <details class="more">
     <summary>The cash bridge and the reserve, explained</summary>
     <p>From 60 to 64 there is no salary and no Social Security, so cash carries everything. The
-    house sale at 60, about $800,000, plus the $200,000 saved during the working years, is that
-    bridge. From 65 on, the plan protects a reserve of 18 months of spending so a bad market never
+    house sale at 60, about $800,000, plus whatever cash has been saved by then, is that bridge. From 65 on, the plan protects a reserve of 18 months of spending so a bad market never
     forces a sale. From 70, Social Security covers most of the budget and the portfolio mostly rests.</p>
   </details>
 </section>
 
-<!-- ④ CHINA -->
+<!-- ④ WILL IT LAST -->
+<section id="last">
+  <p class="eyebrow"><span class="cn">安心</span> Will It Last</p>
+  <h2>One picture, in today's dollars</h2>
+  <p class="lede">One plan, two lenses. Today's dollars shows what the money actually buys, in 2026
+  purchasing power. Future dollars shows what the account statements will say, inflated year by year.
+  Move the controls and watch the shape change. The point is not one exact answer, it is seeing how
+  wide the margin of safety is.</p>
+
+  <div class="card">
+    <div class="scenario-row">
+      <div class="ctrl">
+        <span class="ctrl-cap">Market case</span>
+        <div class="seg small" id="retSeg">
+          <button class="seg-btn" data-ret="4">Cautious 4%</button>
+          <button class="seg-btn active" data-ret="6.5">Base 6.5%</button>
+          <button class="seg-btn" data-ret="9">Optimistic 9%</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <span class="ctrl-cap">Social Security starts at</span>
+        <div class="seg small" id="ssSeg">
+          <button class="seg-btn" data-ss="62">62</button>
+          <button class="seg-btn" data-ss="67">67</button>
+          <button class="seg-btn active" data-ss="70">70</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <span class="ctrl-cap">Show dollars as</span>
+        <div class="seg small" id="lensSeg">
+          <button class="seg-btn active" data-lens="real">Inflation Adjusted</button>
+          <button class="seg-btn" data-lens="nominal">Nominal</button>
+        </div>
+      </div>
+      <div class="ctrl grow">
+        <span class="ctrl-cap">Spending <strong id="spendPct">100%</strong> of plan</span>
+        <input type="range" id="spendSlider" min="70" max="130" step="5" value="100">
+      </div>
+    </div>
+
+    <p class="verdict" id="verdict"></p>
+    <div class="chart-wrap"><svg id="chart" viewBox="0 0 960 400" role="img" aria-label="Portfolio projection by account"></svg></div>
+    <div class="chart-legend" id="chartLegend"></div>
+    <p class="fine">Watch the slate Traditional layer melt into the gold Roth during the conversion
+    years, the cash spike when the house sells at 60, and the whole picture steady when Social
+    Security arrives.</p>
+  </div>
+
+  <details class="more">
+    <summary>Guardrails, for the bad years</summary>
+    <p>If markets fall hard, the plan does not panic and it does not cut essentials. For two years
+    it trims the flexible lines only: travel by 30 percent, hobbies by half, gifts by 10 percent,
+    flexible spending by 40 percent. Essentials are protected first, legacy is optimized last.
+    In her full model this discipline is what pushes success above 94 percent.</p>
+  </details>
+
+  <details class="more">
+    <summary>What this page simplifies</summary>
+    <p>Federal tax only, with the 2026 married brackets held steady in real terms. Social Security
+    modeled as 85 percent taxable, with cost of living raises assumed to match inflation. The return
+    buttons are nominal, before inflation. Brokerage gains, IRMAA tiers, and Monte Carlo randomness
+    are left to the full workbook and the professionals. Directions here are right, decimals are theirs.</p>
+  </details>
+</section>
+
+<!-- ⑤ CHINA -->
 <section id="china">
   <p class="eyebrow"><span class="cn">中国</span> The China Layer</p>
   <h2>What actually changes when you go home</h2>
@@ -190,62 +254,6 @@
       </ul>
     </div>
   </div>
-</section>
-
-<!-- ⑤ WILL IT LAST -->
-<section id="last">
-  <p class="eyebrow"><span class="cn">安心</span> Will It Last</p>
-  <h2>One picture, in today's dollars</h2>
-  <p class="lede">Every value below is in 2026 purchasing power, so the numbers stay meaningful.
-  Move the controls and watch the shape change. The point is not one exact answer, it is seeing
-  how wide the margin of safety is.</p>
-
-  <div class="card">
-    <div class="scenario-row">
-      <div class="ctrl">
-        <span class="ctrl-cap">Market case</span>
-        <div class="seg small" id="retSeg">
-          <button class="seg-btn" data-ret="3">Stress 3%</button>
-          <button class="seg-btn active" data-ret="5">Base 5%</button>
-          <button class="seg-btn" data-ret="7">Optimistic 7%</button>
-        </div>
-      </div>
-      <div class="ctrl">
-        <span class="ctrl-cap">Social Security starts at</span>
-        <div class="seg small" id="ssSeg">
-          <button class="seg-btn" data-ss="62">62</button>
-          <button class="seg-btn" data-ss="67">67</button>
-          <button class="seg-btn active" data-ss="70">70</button>
-        </div>
-      </div>
-      <div class="ctrl grow">
-        <span class="ctrl-cap">Spending <strong id="spendPct">100%</strong> of plan</span>
-        <input type="range" id="spendSlider" min="70" max="130" step="5" value="100">
-      </div>
-    </div>
-
-    <p class="verdict" id="verdict"></p>
-    <div class="chart-wrap"><svg id="chart" viewBox="0 0 960 400" role="img" aria-label="Portfolio projection by account"></svg></div>
-    <div class="chart-legend" id="chartLegend"></div>
-    <p class="fine">Watch the slate Traditional layer melt into the gold Roth during the conversion
-    years, the cash spike when the house sells at 60, and the whole picture steady when Social
-    Security arrives.</p>
-  </div>
-
-  <details class="more">
-    <summary>Guardrails, for the bad years</summary>
-    <p>If markets fall hard, the plan does not panic and it does not cut essentials. For two years
-    it trims the flexible lines only: travel by 30 percent, hobbies by half, gifts by 10 percent,
-    flexible spending by 40 percent. Essentials are protected first, legacy is optimized last.
-    In her full model this discipline is what pushes success above 94 percent.</p>
-  </details>
-
-  <details class="more">
-    <summary>What this page simplifies</summary>
-    <p>Federal tax only, with the 2026 married brackets held steady in real terms. Social Security
-    modeled as 85 percent taxable. Brokerage gains, IRMAA tiers, and Monte Carlo randomness are left
-    to the full workbook and the professionals. Directions here are right, decimals are theirs.</p>
-  </details>
 </section>
 
 </main>

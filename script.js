@@ -4,16 +4,18 @@
 /* ---------- plan of record ---------- */
 const DEFAULTS = {
   currentAge: 56, retireAge: 60, endAge: 95,
-  trad: 1100000, roth: 310000, hsa: 30000, brokerage: 50000, cash: 120000,
-  tradContrib: 33000, rothContrib: 30000, hsaWork: 9750, hsaRetire: 5400, cashSavings: 50000,
+  /* her real snapshot. Workplace plans counted as if already rolled over:
+     $120k of workplace money is Roth, the rest is pre tax. SERP and 529 excluded. */
+  trad: 1292907, roth: 259260, hsa: 33574, brokerage: 60042, cash: 157640,
+  college529: 160483, serp: 55576, /* shown for completeness, never counted in the portfolio */
   houseAge: 60, houseNet: 800000,
   spendTo74: 123000, spend75: 94000,
-  ret: 5, inflation: 2.5, cashYield: 2,
+  ret: 6.5, inflation: 2.5, cashYield: 2.8,
   ssAge: 70, ssAnnual: 80400,
   workingTaxable: 270000, workCeiling: 24, gapCeiling: 22, convStop: 70,
   reserveMonths: 18,
 };
-const STORE_KEY = "road-home-v1";
+const STORE_KEY = "road-home-v2";
 
 let S = load();
 function load() {
@@ -25,8 +27,9 @@ function load() {
 }
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) {} }
 
+let lastChartRows = [];
 /* what-if layer for section 5 (not persisted) */
-let W = { ret: null, ssAge: null, spendMult: 1 };
+let W = { ret: null, ssAge: null, spendMult: 1, lens: "real" };
 
 /* ---------- tax math (2026 MFJ, held steady in real terms) ---------- */
 const BR = [
@@ -69,8 +72,6 @@ function simulate(opts = {}) {
     const ded = STD + (a >= 65 ? STD65 : 0);
 
     /* contributions */
-    if (working) { trad += p.tradContrib; roth += p.rothContrib; hsa += p.hsaWork; cash += p.cashSavings; }
-    else if (a >= 61 && a <= 64) { hsa += p.hsaRetire; }
     if (a === p.houseAge) cash += p.houseNet;
 
     const ss = a >= ssAge ? ssBase : 0;
@@ -153,7 +154,7 @@ const ERAS = [
     id: 0, from: 56, to: 59, cn: "耕耘", name: "Work & Convert", color: "var(--era1)",
     tip: "Earn, save, and start moving money to the Roth while the paycheck still flows.",
     purpose: "Earn, save, and begin moving money from Traditional to Roth, filling but never passing the 24 percent bracket.",
-    actions: "Max the workplace accounts, about $33,000 Traditional, $30,000 Roth 403b, and $9,750 HSA each year. Save toward the $200,000 cash bridge. Convert in stages each November and December after a fresh tax projection, and pay the tax from cash. Finish the Texas will, trust, and powers of attorney, and audit every beneficiary form.",
+    actions: "Keep filling the workplace accounts and saving cash, and update the balances on this page as they grow. Convert in stages each November and December after a fresh tax projection, and pay the tax from cash. Finish the Texas will, trust, and powers of attorney, and audit every beneficiary form.",
     watch: "A conversion here costs about 24 cents per dollar. It is only worth it because it erases a much larger tax later, so never drift past the ceiling."
   },
   {
@@ -278,7 +279,7 @@ let convMode = "working";
 
 function gapBaseTaxable() {
   /* golden window baseline: interest on the bridge, minus the deduction */
-  const interest = (S.cash + S.houseNet + 4 * S.cashSavings) * (S.cashYield / 100);
+  const interest = (S.cash + S.houseNet) * (S.cashYield / 100);
   return Math.max(0, interest - STD);
 }
 function convBaseTaxable() { return convMode === "working" ? S.workingTaxable : gapBaseTaxable(); }
@@ -411,7 +412,15 @@ paid from the calmest bucket, and each bucket refills the one below it. Hover an
 </div>
 <div class="bucket-side">
   <span class="chip acct" data-tip="Triple tax advantaged: deductible in, grows free, tax free out for qualified care. Contributions continue through 64.">HSA</span>
-  <p>A fourth small bucket with one job: healthcare. It sits outside the flow, invested for growth, reserved for medical costs and never used for general spending.</p>
+  <p>A small bucket with one job: healthcare. It sits outside the flow, invested for growth, reserved for medical costs.</p>
+</div>
+<div class="bucket-side">
+  <span class="chip acct" data-tip="Nonqualified deferred compensation from Baylor Scott White. It cannot be rolled over or converted. It pays out on its own schedule and is taxed as ordinary income when it does. Confirm the payout timing with HR.">SERP</span>
+  <p>About <strong id="cserp"></strong> waits here. It will arrive as taxable income on the employer's schedule, worth knowing which years so it does not collide with a conversion.</p>
+</div>
+<div class="bucket-side">
+  <span class="chip acct" data-tip="The Morgan Stanley 529. Education money with its own beneficiary and its own rules. It is real, it is hers, and it is deliberately not counted anywhere in this plan.">College 529</span>
+  <p>Also outside the portfolio. About <strong id="c529"></strong> sits here for education, separate from retirement entirely.</p>
 </div>
 <p class="layer-head">Layer two · Which tax door it exits through</p>
 <p class="layer-note">The buckets decide what gets sold. The order below decides which account the money
@@ -422,6 +431,8 @@ have doors between them. Buckets are what she really owns.</p>`;
 function renderBuckets() {
   const sec = document.getElementById("income");
   sec.querySelector(".lede").insertAdjacentHTML("afterend", BUCKET_HTML);
+  document.getElementById("c529").textContent = fmt$(S.college529);
+  document.getElementById("cserp").textContent = fmt$(S.serp);
   sec.querySelectorAll(".chip[data-tip]").forEach(c => {
     c.addEventListener("mousemove", ev => showTip(ev, `<b>${c.textContent}</b>${c.dataset.tip}`));
     c.addEventListener("mouseleave", hideTip);
@@ -484,10 +495,19 @@ const LAYERS = [
 ];
 
 function renderChart() {
-  const rows = simulate({
+  const sim = simulate({
     ret: W.ret ?? S.ret,
     ssAge: W.ssAge ?? S.ssAge,
     spendMult: W.spendMult,
+  });
+  /* the lens: engine runs in today's dollars, the nominal view inflates each year */
+  const infl = 1 + S.inflation / 100;
+  const rows = sim.map((r, i) => {
+    if (W.lens !== "nominal") return r;
+    const m = Math.pow(infl, i), o = { ...r };
+    ["trad", "roth", "hsa", "brok", "cash", "total", "spend", "ss", "shortfall"]
+      .forEach(k => o[k] = r[k] * m);
+    return o;
   });
   const svg = document.getElementById("chart");
   const Wd = 960, H = 400, mL = 62, mR = 16, mT = 16, mB = 34;
@@ -528,7 +548,33 @@ function renderChart() {
     if (r.age % 5 === 0) ages += `<text x="${x(i)}" y="${H - 10}" text-anchor="middle" font-size="12" fill="#5A6764">${r.age}</text>`;
   });
 
-  svg.innerHTML = grid + paths + marks + ages;
+  svg.innerHTML = grid + paths + marks + ages +
+    `<line id="chartGuide" y1="${mT}" y2="${mT + ih}" stroke="#22302E" stroke-width="1.5" opacity="0" pointer-events="none"/>`;
+
+  /* hover: nearest year breakdown */
+  lastChartRows = rows;
+  if (!svg.dataset.hover) {
+    svg.dataset.hover = "1";
+    svg.addEventListener("mousemove", ev => {
+      const rows2 = lastChartRows;
+      const rect = svg.getBoundingClientRect();
+      const vx = (ev.clientX - rect.left) / rect.width * 960;
+      let i = Math.round((vx - mL) / iw * (rows2.length - 1));
+      i = Math.max(0, Math.min(rows2.length - 1, i));
+      const r = rows2[i];
+      const g = document.getElementById("chartGuide");
+      const gx = mL + (i / (rows2.length - 1)) * iw;
+      g.setAttribute("x1", gx); g.setAttribute("x2", gx); g.setAttribute("opacity", ".5");
+      const lines = LAYERS.filter(L => r[L.k] > 500).map(L =>
+        `${L.name} ${fmtK(r[L.k])}`).join(" · ");
+      showTip(ev, `<b>Age ${r.age} · ${r.year} · ${fmtK(r.total)} total</b>${lines}${r.shortfall > 1 ? `<br><span style="color:#E8A79E">Shortfall ${fmtK(r.shortfall)}</span>` : ""}`);
+    });
+    svg.addEventListener("mouseleave", () => {
+      hideTip();
+      const g = document.getElementById("chartGuide");
+      if (g) g.setAttribute("opacity", "0");
+    });
+  }
 
   document.getElementById("chartLegend").innerHTML = LAYERS.map(L =>
     `<span><span class="key-dot" style="background:${L.color}"></span>${L.name}</span>`).join("");
@@ -542,8 +588,29 @@ function renderChart() {
   } else {
     const end = rows[rows.length - 1];
     v.className = "verdict";
-    v.textContent = `Money lasts through 95 with about ${fmtK(end.total)} remaining in today's dollars, ${fmtK(end.roth)} of it in the tax free Roth.`;
+    v.textContent = W.lens === "nominal"
+      ? `Money lasts through 95 with about ${fmtK(end.total)} remaining in future dollars, ${fmtK(end.roth)} of it in the tax free Roth.`
+      : `Money lasts through 95 with about ${fmtK(end.total)} remaining in today's dollars, ${fmtK(end.roth)} of it in the tax free Roth.`;
   }
+  /* withdrawal rate context */
+  let rateEl = document.getElementById("wdrRate");
+  if (!rateEl) {
+    rateEl = document.createElement("p");
+    rateEl.id = "wdrRate";
+    rateEl.className = "fine";
+    v.insertAdjacentElement("afterend", rateEl);
+  }
+  const rRet = rows.find(r => r.age === S.retireAge);
+  const rSS = rows.find(r => r.age === (W.ssAge ?? S.ssAge));
+  if (rRet && rRet.total > 0) {
+    const rate = rRet.spend / rRet.total;
+    let txt = `At retirement this asks ${fmt$(rRet.spend)} from about ${fmtK(rRet.total)} of assets, a first year rate of <strong>${fmtPct(rate)}</strong>. The classic rule of thumb says 4% tends to survive thirty years.`;
+    if (rSS && rSS.total > 0) {
+      const net = Math.max(0, rSS.spend - rSS.ss) / rSS.total;
+      txt += ` Once Social Security arrives the portfolio only covers the gap, and the rate falls to <strong>${fmtPct(net)}</strong>.`;
+    }
+    rateEl.innerHTML = txt;
+  } else rateEl.textContent = "";
 }
 
 /* ============================================================
@@ -561,11 +628,6 @@ const FIELDS = [
   { k: "hsa", label: "HSA", money: true },
   { k: "brokerage", label: "Brokerage", money: true },
   { k: "cash", label: "Cash", money: true },
-  { g: "While still working, per year" },
-  { k: "tradContrib", label: "Traditional contribution", money: true },
-  { k: "rothContrib", label: "Roth 403b contribution", money: true },
-  { k: "hsaWork", label: "HSA contribution", money: true },
-  { k: "cashSavings", label: "Extra cash saved", money: true },
   { g: "The house" },
   { k: "houseAge", label: "Sell at age" },
   { k: "houseNet", label: "Net proceeds", money: true },
@@ -573,7 +635,6 @@ const FIELDS = [
   { k: "spendTo74", label: "Per year through 74", money: true },
   { k: "spend75", label: "Per year from 75", money: true },
   { g: "Assumptions" },
-  { k: "ret", label: "Investment return %", step: 0.5 },
   { k: "inflation", label: "Inflation %", step: 0.5 },
   { k: "cashYield", label: "Cash yield %", step: 0.5 },
   { k: "ssAnnual", label: "Social Security at 70, per year", money: true },
@@ -581,6 +642,9 @@ const FIELDS = [
   { k: "workCeiling", label: "Working conversion ceiling", select: [[24, "24% bracket"], [22, "22% bracket"], [0, "No conversions"]] },
   { k: "gapCeiling", label: "Retirement conversion ceiling", select: [[24, "24% bracket"], [22, "22% bracket"], [12, "12% bracket"], [0, "No conversions"]] },
   { k: "reserveMonths", label: "Protected reserve, months" },
+  { g: "Outside the portfolio" },
+  { k: "serp", label: "SERP", money: true },
+  { k: "college529", label: "College 529", money: true },
 ];
 
 function buildPanel() {
@@ -609,7 +673,14 @@ function buildPanel() {
     group.appendChild(row);
     row.querySelector("input,select").addEventListener("change", e => {
       const v = parseFloat(e.target.value);
-      if (!isNaN(v)) { S[f.k] = v; save(); renderAll(); }
+      if (!isNaN(v)) {
+        S[f.k] = v; save();
+        const c = document.getElementById("c529");
+        if (c) c.textContent = fmt$(S.college529);
+        const sp = document.getElementById("cserp");
+        if (sp) sp.textContent = fmt$(S.serp);
+        renderAll();
+      }
     });
   });
 }
@@ -650,9 +721,19 @@ document.querySelectorAll("#ssSeg [data-ss]").forEach(b => b.addEventListener("c
   document.querySelectorAll("#ssSeg .seg-btn").forEach(x => x.classList.toggle("active", x === b));
   renderChart();
 }));
+function updateSpendLabel() {
+  const m = W.spendMult;
+  document.getElementById("spendPct").textContent =
+    `${fmt$(S.spendTo74 * m)} a year through 74, then ${fmt$(S.spend75 * m)}`;
+}
+document.querySelectorAll("#lensSeg [data-lens]").forEach(b => b.addEventListener("click", () => {
+  W.lens = b.dataset.lens;
+  document.querySelectorAll("#lensSeg .seg-btn").forEach(x => x.classList.toggle("active", x === b));
+  renderChart();
+}));
 document.getElementById("spendSlider").addEventListener("input", e => {
   W.spendMult = +e.target.value / 100;
-  document.getElementById("spendPct").textContent = e.target.value + "%";
+  updateSpendLabel();
   renderChart();
 });
 
@@ -673,4 +754,5 @@ window.addEventListener("resize", () => buildTimeline());
 buildTimeline();
 renderBuckets();
 buildPanel();
+updateSpendLabel();
 renderAll();
